@@ -8,7 +8,8 @@
     "dev": "ts-node-dev --respawn ./src/app.ts",
     "remove:dist": "rimraf dist/",
     "build": "yarn remove:dist && yarn tsc",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "start": "node ./dist/app.js"
   },
   "author": "",
   "license": "ISC",
