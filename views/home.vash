@@ -150,7 +150,7 @@
               <h4>@item.title</h4>
             </div>
             <div class="column">
-              @if (@item.category) {
+              @if (item.category) {
                 <b>@item.category.name</b>
               } else {
                 <b>Missing Category</b>
