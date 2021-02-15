@@ -83,7 +83,7 @@
 
       #tree-container {
         position: absolute;
-        top: 15px;
+        top: 62px;
         left: 0;
         right: 0;
         bottom: 0;
