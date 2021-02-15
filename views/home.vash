@@ -150,6 +150,9 @@
               <h4>@item.title</h4>
             </div>
             <div class="column">
+              <b>@item.category.name</b>
+            </div>
+            <div class="column">
               @if (item.isAcquired) {
                 <input type="checkbox" id="acquired" class="chk-acquired" data-id="@item.id" checked>  
               } else {
