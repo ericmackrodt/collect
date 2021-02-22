@@ -193,6 +193,10 @@
     $(".btn-delete").click(function () {
       const item = $(this);
       const id = item.data("id");
+      var r = confirm("Are you sure you want to delete?");
+      if (!r) {
+        return;
+      }
       fetch("/delete?id=" + id).then(() => {
         $(`li[data-ident='${id}']`).remove();
       });
