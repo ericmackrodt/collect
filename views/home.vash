@@ -158,12 +158,12 @@
             </div>
             <div class="column">
               @if (item.isAcquired) {
-                <input type="checkbox" id="acquired" class="chk-acquired" data-id="@item.id" checked>  
+                <input type="checkbox" id="chk-@item.id" class="chk-acquired" data-id="@item.id" checked />  
               } else {
-                <input type="checkbox" id="acquired" class="chk-acquired" data-id="@item.id">
+                <input type="checkbox" id="chk-@item.id" class="chk-acquired" data-id="@item.id" />
               }
               
-              <label for="acquired">Acquired</label>
+              <label for="chk-@item.id">Acquired</label>
             </div>
             <div class="column">
               <button data-id="@item.id" class="btn-delete">Delete</button>
