@@ -1,44 +1,56 @@
-import * as loki from "lokijs";
-import * as path from "path";
-import { Category, Entry } from "./type";
-let db: loki;
+import { BOOLEAN, INTEGER, Sequelize, STRING } from "sequelize";
+import { CategoryInstance, EntryInstance } from "./type";
 
-export function getDb() {
-  return db;
-}
+export const sequelize = new Sequelize(
+  "postgres://oqolaaxggxrlch:799d3dea97557b0928404162426de477d4b3c55d15ad9b5c1f4fa3d1159626bf@ec2-52-203-27-62.compute-1.amazonaws.com:5432/de9q4fftp9s84i",
+  {
+    ssl: true,
+    dialect: "postgres",
+    protocol: "postgress",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  }
+);
 
-export function initializeDb(): Promise<loki> {
-  return new Promise((resolve) => {
-    // implement the autoloadback referenced in loki constructor
-    const databaseInitialize = () => {
-      let entries = db.getCollection<Entry>("entries");
+export const CategoryModel = sequelize.define<CategoryInstance>("category", {
+  id: {
+    primaryKey: true,
+    type: INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+  },
+  name: {
+    type: STRING,
+  },
+});
 
-      if (!entries) {
-        console.log("Creating view");
-        entries = db.addCollection<Entry>("entries", {
-          indices: ["id"],
-        });
-      }
+export const EntryModel = sequelize.define<EntryInstance>("entry", {
+  id: {
+    primaryKey: true,
+    type: INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+  },
+  title: {
+    type: STRING,
+  },
+  isAcquired: {
+    type: BOOLEAN,
+  },
+  image: {
+    type: STRING,
+    allowNull: true,
+  },
+});
 
-      let categories = db.getCollection<Category>("categories");
+EntryModel.belongsTo(CategoryModel);
 
-      if (!categories) {
-        console.log("Creating view");
-        categories = db.addCollection<Category>("categories", {
-          indices: ["id"],
-        });
-      }
-
-      // kick off any program logic or start listening to external events
-      resolve(db);
-    };
-
-    db = new loki(path.join(__dirname, "../collection.db"), {
-      autoload: true,
-      autoloadCallback: databaseInitialize,
-      autosave: true,
-
-      autosaveInterval: 4000,
-    });
+export async function initializeDb(): Promise<void> {
+  return sequelize.authenticate().then(() => {
+    sequelize.sync();
   });
 }

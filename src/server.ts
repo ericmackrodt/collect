@@ -1,11 +1,8 @@
-import * as express from "express";
-import { getDb } from "./db";
-import { Category, Entry } from "./type";
 import * as bodyParser from "body-parser";
-import { v4 } from "uuid";
+import * as express from "express";
+import { CategoryModel, EntryModel } from "./db";
 
 const app = express();
-const port = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "vash");
@@ -21,16 +18,15 @@ app.post("/entries", async (req, res) => {
     res.end();
   }
 
-  const db = getDb();
-
-  const items = db.getCollection<Entry>("entries");
-
-  items.insert({
-    id: v4(),
-    cateogoryId: category,
+  const entry = await EntryModel.create({
     isAcquired: false,
     title: name,
+    categoryId: parseInt(category),
   });
+
+  await entry.save();
+
+  // await sequelize.sync({ force: true });
 
   res.redirect("/");
 });
@@ -38,20 +34,12 @@ app.post("/entries", async (req, res) => {
 app.get("/acquire", async (req, res) => {
   const { id, val } = req.query;
 
-  const db = getDb();
-  const items = db.getCollection<Entry>("entries");
-  const item = items.findOne({ id: id as string });
-
-  if (!item) {
-    res.status(404);
-    res.send({});
-    return;
-  }
-
-  items.update({
-    ...item,
-    isAcquired: val === "true",
-  });
+  await EntryModel.update(
+    {
+      isAcquired: val === "true",
+    },
+    { where: { id: parseInt(id as string) } }
+  );
 
   res.status(200);
   res.send({});
@@ -60,17 +48,7 @@ app.get("/acquire", async (req, res) => {
 app.get("/delete", async (req, res) => {
   const { id } = req.query;
 
-  const db = getDb();
-  const items = db.getCollection<Entry>("entries");
-  const item = items.findOne({ id: id as string });
-
-  if (!item) {
-    res.status(404);
-    res.send({});
-    return;
-  }
-
-  items.remove(item);
+  await EntryModel.destroy({ where: { id: parseInt(id as string) } });
 
   res.status(200);
   res.send({});
@@ -85,36 +63,27 @@ app.post("/categories", async (req, res) => {
     res.end();
   }
 
-  const db = getDb();
-
-  const categories = db.getCollection<Category>("categories");
-
-  categories.insert({
-    id: v4(),
+  const category = await CategoryModel.create({
     name: categoryName,
   });
+
+  await category.save();
 
   res.redirect("/");
 });
 
 app.get("/", async (req, res) => {
-  const db = getDb();
+  const categories = await CategoryModel.findAll();
 
-  const categories = db.getCollection<Category>("categories");
+  const items = await EntryModel.findAll({ include: [CategoryModel] });
 
-  const items = db.getCollection<Entry>("entries").data.map((i) => {
-    return {
-      ...i,
-      category: categories.where((c) => c.id === i.cateogoryId)[0],
-    };
-  });
+  const count = await EntryModel.count();
+
   res.render("home", {
-    items: items,
-    count: items.length,
-    categories: categories.data,
+    items,
+    count,
+    categories,
   });
 });
 
-app.listen(port, () =>
-  console.log(`Example app listening at http://localhost:${port}`)
-);
+export default app;

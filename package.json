@@ -28,7 +28,10 @@
     "lokijs": "^1.5.10",
     "node-fetch": "^2.6.0",
     "open-graph-scraper": "^4.5.1",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
     "rimraf": "^3.0.2",
+    "sequelize": "^6.5.0",
     "uuid": "^8.3.0",
     "vash": "^0.13.0",
     "yaml": "^1.10.0"
