@@ -201,5 +201,17 @@
         $(`li[data-ident='${id}']`).remove();
       });
     });
+
+    $(function() {
+      if (localStorage.getItem('categoryId')) {
+          $("#categories option").eq(localStorage.getItem('categoryId')).prop('selected', true);
+      }
+
+      $("#categories").on('change', function() {
+          localStorage.setItem('categoryId', $('option:selected', this).index());
+      });
+
+      $("#name").focus();
+    });
   </script>
 </html>

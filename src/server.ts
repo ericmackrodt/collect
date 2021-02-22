@@ -75,7 +75,10 @@ app.post("/categories", async (req, res) => {
 app.get("/", async (req, res) => {
   const categories = await CategoryModel.findAll();
 
-  const items = await EntryModel.findAll({ include: [CategoryModel] });
+  const items = await EntryModel.findAll({
+    include: [CategoryModel],
+    order: [["id", "DESC"]],
+  });
 
   const count = await EntryModel.count();
 
